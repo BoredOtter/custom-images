@@ -1,32 +1,44 @@
-name: Push to DockerHub
+name: Build and Push to Docker Hub
 
 on:
   push:
     branches:
-      - 'master'
+      - main
 
 jobs:
-  docker:
-    runs-on: ubuntu-latest
+  build-and-push:
+    strategy:
+      matrix: 
+        include:
+          - image: code-server
+            context: code-server
+          - image: jupyter-all-spark
+            context: jupyter-all-spark
+    name: Build and Push ${{ matrix.image }}
+    runs-on: ubuntu-22.04
     steps:
-      - 
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Check for changes
+        id: changes
+        uses: dorny/paths-filter@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v5
+          filters: |
+            image:
+              - '${{ matrix.image }}/**'
+    
+      - name: Login to Docker Hub
+        if: steps.changes.outputs.image == 'true'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+    
+      - name: Build and Push
+        if: steps.changes.outputs.image == 'true'
+        uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ksw2137/code-custom:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.image }}:${{ github.sha }}
+          context: ${{ matrix.context }}

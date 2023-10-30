@@ -1,0 +1,1 @@
+docker run -p 10000:8888 quay.io/jupyter/scipy-notebook:2023-10-20

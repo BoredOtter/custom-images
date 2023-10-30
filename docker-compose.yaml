@@ -1,9 +1,16 @@
 ---
 version: "2.1"
 services:
+  jupyter-notebook:
+    build:
+      context: jupyter-all-spark
+      dockerfile: Dockerfile
+    ports:
+      - 0.0.0.0:8888:8888
   code-server:
-    image: code
-    container_name: code-server
+    build:
+      context: code-server
+      dockerfile: Dockerfile
     environment:
       - PUID=1000
       - PGID=1000
@@ -15,6 +22,6 @@ services:
       - PROXY_DOMAIN=code-server.my.domain #optional
       - DEFAULT_WORKSPACE=/config/workspace #optional
     volumes:
-      - /path/to/appdata/config:/config
+      - ./code-server/config:/config
     ports:
       - 0.0.0.0:8443:8443

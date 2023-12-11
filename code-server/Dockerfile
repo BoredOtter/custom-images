@@ -4,8 +4,9 @@ RUN apt update && \
     apt upgrade -y && \
     apt install -y python3 python3-pip bash
 
-RUN pip3 install --include-deps && \
-    openshift pyyaml kubernetes flask ansible
+COPY requirements.txt /tmp/
+
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 
 RUN apt-get update && \
     apt-get -qy full-upgrade && \

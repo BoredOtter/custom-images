@@ -12,8 +12,8 @@ jobs:
         include:
           - image: code-server
             context: code-server
-          - image: jupyter-all-spark
-            context: jupyter-all-spark
+          - image: si-notepad
+            context: si-notepad
     name: Build and Push ${{ matrix.image }}
     runs-on: ubuntu-22.04
     steps:
@@ -56,7 +56,7 @@ jobs:
         working-directory: ./temp
         if: steps.changes.outputs.image == 'true'
         run: |
-          git config --global user.name "github-actions[bot]"
+          git config --global user.name "🦝"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url --push origin https://github.com/BoredOtter/custom-images-manifests.git
 

@@ -1,4 +1,4 @@
-FROM linuxserver/code-server:4.19.1
+FROM linuxserver/code-server:4.22.0
 
 RUN apt update && \
     apt upgrade -y && \

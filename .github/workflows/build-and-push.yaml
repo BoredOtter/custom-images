@@ -42,3 +42,35 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:${{ github.sha }}
           context: ${{ matrix.context }}
+
+      - name: Checkout manifest repository
+        uses: actions/checkout@v4
+        if: steps.changes.outputs.image == 'true'
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: BoredOtter/custom-images-manifests
+          path: ./${{ matrix.image }}
+          ref: main
+
+      - name: Setup Git
+        working-directory: ./manifest
+        if: steps.changes.outputs.image == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url --push origin https://github.com/BoredOtter/custom-images-manifests.git
+
+      - name: Render manifest template
+        if: steps.changes.outputs.image == 'true'
+        working-directory: ./manifest
+        run: |
+          export TAG=${{ github.sha }}
+          sed "s/__TAG__/$TAG/" ${{ matrix.image }}/templates/deployment.yaml > ${{ matrix.image }}/deployment/deployment.yaml
+
+      - name: Push updated manifest
+        if: steps.changes.outputs.image == 'true'
+        working-directory: ./manifest
+        run: |
+          git add .
+          git commit -m "Updated ${{ matrix.image }} image tag to: ${{ github.sha }}"
+          git push

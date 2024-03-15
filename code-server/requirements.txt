@@ -3,3 +3,4 @@ pyyaml
 kubernetes
 flask
 ansible
+locust

@@ -49,11 +49,11 @@ jobs:
         with:
           token: ${{ secrets.REPO_TOKEN }}
           repository: BoredOtter/custom-images-manifests
-          path: ./${{ matrix.image }}
+          path: ./temp
           ref: main
 
       - name: Setup Git
-        working-directory: ./${{ matrix.image }}
+        working-directory: ./temp
         if: steps.changes.outputs.image == 'true'
         run: |
           git config --global user.name "github-actions[bot]"
@@ -62,14 +62,14 @@ jobs:
 
       - name: Render manifest template
         if: steps.changes.outputs.image == 'true'
-        working-directory: ./${{ matrix.image }}
+        working-directory: ./temp
         run: |
           export TAG=${{ github.sha }}
-          sed "s/__TAG__/$TAG/" ${{ matrix.image }}/templates/deployment.yaml > ${{ matrix.image }}/deployment/deployment.yaml
+          sed "s/__TAG__/$TAG/" ./templates/${{ matrix.image }}/deployment.yaml > ./manifests/${{ matrix.image }}/deployment.yaml
 
       - name: Push updated manifest
         if: steps.changes.outputs.image == 'true'
-        working-directory: ./${{ matrix.image }}
+        working-directory: ./temp
         run: |
           git add .
           git commit -m "Updated ${{ matrix.image }} image tag to: ${{ github.sha }}"

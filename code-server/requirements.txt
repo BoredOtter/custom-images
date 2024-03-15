@@ -4,3 +4,4 @@ kubernetes
 flask
 ansible
 locust
+fastapi

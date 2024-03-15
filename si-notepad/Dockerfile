@@ -10,21 +10,21 @@ ENV PATH="$PATH:/home/jupyter/.local/bin"
 
 #as root install python packages
 RUN pip install --default-timeout=100 -U jupyter jupyterlab pandas numpy seaborn scipy matplotlib scikit-learn ffmpeg xlrd deap && \
-
-#pygraphviz is not supported on an unauthorized ubi9
-#pip install pygraphviz && \ 
-
-#i'm migrating to pytorch from tensorflow
-#pip install -U tensorflow==2.12 && \
-pip install --default-timeout=100 -U torch==2.2.1 torchvision torchaudio
+     pip install --default-timeout=100 -U torch==2.2.1 torchvision torchaudio
 
 RUN useradd -ms /bin/bash jupyter
 USER jupyter
 WORKDIR /home/jupyter 
 
-EXPOSE 8888        
+EXPOSE 8080        
 
 #starting jupyter-lab as root (not secure but useful for installing additional package from within jupyter)
 USER root
-# ENTRYPOINT ["jupyter", "notebook","--allow-root","--ip=0.0.0.0","--port=8888","--no-browser"]
-ENTRYPOINT ["jupyter", "lab","--ip=0.0.0.0","--allow-root"]
+
+#passwd: admin - lol
+
+USER root
+RUN jupyter server --generate-config
+#passwd: admin lol XD
+COPY config.py /root/.jupyter/jupyter_server_config.py
+ENTRYPOINT ["jupyter", "notebook","--allow-root","--ip=0.0.0.0","--no-browser","--port=8888"]

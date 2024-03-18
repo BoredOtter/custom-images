@@ -2,7 +2,7 @@ FROM linuxserver/code-server:4.22.1
 
 RUN apt update && \
     apt upgrade -y && \
-    apt install -y python3 python3-pip bash
+    apt install -y python3 python3-pip bash iputils-ping
 
 COPY requirements.txt /tmp/
 

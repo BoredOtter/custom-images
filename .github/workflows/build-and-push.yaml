@@ -37,7 +37,7 @@ jobs:
     
       - name: Build and Push
         if: steps.changes.outputs.image == 'true'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:${{ github.sha }}
